@@ -2,12 +2,17 @@ import React from 'react';
 import { LayoutDashboard, Globe, Zap, BarChart3, Settings, HelpCircle, Search } from 'lucide-react';
 import { cn } from '../lib/utils';
 
-export const Sidebar: React.FC = () => {
+interface SidebarProps {
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
   const menuItems = [
-    { icon: LayoutDashboard, label: 'Dashboard', active: true },
-    { icon: Globe, label: 'Global Pulse', active: false },
-    { icon: Zap, label: 'Live Trends', active: false },
-    { icon: BarChart3, label: 'Analytics', active: false },
+    { icon: LayoutDashboard, label: 'Dashboard' },
+    { icon: Globe, label: 'Global Pulse' },
+    { icon: Zap, label: 'Live Trends' },
+    { icon: BarChart3, label: 'Analytics' },
   ];
 
   return (
@@ -24,16 +29,17 @@ export const Sidebar: React.FC = () => {
         {menuItems.map((item) => (
           <button
             key={item.label}
+            onClick={() => setActiveTab(item.label)}
             className={cn(
               "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group",
-              item.active 
+              activeTab === item.label 
                 ? "bg-blue-600/10 text-blue-400" 
                 : "text-white/40 hover:text-white hover:bg-white/5"
             )}
           >
-            <item.icon size={18} className={cn(item.active ? "text-blue-400" : "group-hover:text-white")} />
+            <item.icon size={18} className={cn(activeTab === item.label ? "text-blue-400" : "group-hover:text-white")} />
             <span className="text-sm font-medium">{item.label}</span>
-            {item.active && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-400 shadow-glow shadow-blue-400/50" />}
+            {activeTab === item.label && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-400 shadow-glow shadow-blue-400/50" />}
           </button>
         ))}
       </nav>

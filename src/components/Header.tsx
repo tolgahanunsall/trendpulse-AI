@@ -1,7 +1,12 @@
 import React from 'react';
 import { Search, Bell, User } from 'lucide-react';
 
-export const Header: React.FC = () => {
+interface HeaderProps {
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+}
+
+export const Header: React.FC<HeaderProps> = ({ searchQuery, setSearchQuery }) => {
   return (
     <header className="h-20 border-b border-white/5 flex items-center justify-between px-8 sticky top-0 z-10 bg-bg/80 backdrop-blur-md">
       <div className="flex-1 max-w-xl">
@@ -10,6 +15,8 @@ export const Header: React.FC = () => {
           <input 
             type="text" 
             placeholder="Search trends, topics, or regions..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-white/5 border border-white/10 rounded-2xl py-2.5 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/40 transition-all"
           />
         </div>

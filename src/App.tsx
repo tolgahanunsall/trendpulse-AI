@@ -6,6 +6,7 @@ import { TrendCard } from './components/TrendCard';
 import { TrendChart } from './components/TrendChart';
 import { fetchGlobalTrends, analyzeTopic, Trend } from './services/gemini';
 import { RefreshCw, Globe2, AlertCircle, X, Sparkles, ExternalLink } from 'lucide-react';
+import { cn } from './lib/utils';
 
 export default function App() {
   const [trends, setTrends] = useState<Trend[]>([]);
@@ -13,6 +14,11 @@ export default function App() {
   const [selectedTrend, setSelectedTrend] = useState<Trend | null>(null);
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
+  
+  // New states for functionality
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState('Dashboard');
+  const [platformFilter, setPlatformFilter] = useState('All');
 
   const loadTrends = async () => {
     setLoading(true);
@@ -34,12 +40,24 @@ export default function App() {
     setAnalyzing(false);
   };
 
+  // Filtering logic
+  const filteredTrends = trends.filter(trend => {
+    const matchesSearch = 
+      trend.topic.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      trend.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      trend.region.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesPlatform = platformFilter === 'All' || trend.platform === platformFilter;
+    
+    return matchesSearch && matchesPlatform;
+  });
+
   return (
     <div className="flex min-h-screen bg-bg text-ink selection:bg-blue-500/30">
-      <Sidebar />
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       
       <main className="flex-1 flex flex-col min-w-0">
-        <Header />
+        <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
         
         <div className="p-8 space-y-8 max-w-[1600px] mx-auto w-full">
           {/* Hero Section */}
@@ -50,10 +68,13 @@ export default function App() {
                   <Sparkles size={14} />
                   <span>AI-Powered Insights</span>
                 </div>
-                <h2 className="text-4xl font-bold tracking-tight">Global Trend Pulse</h2>
+                <h2 className="text-4xl font-bold tracking-tight">
+                  {activeTab === 'Dashboard' ? 'Global Trend Pulse' : activeTab}
+                </h2>
                 <p className="text-white/40 max-w-lg">
-                  Real-time analysis of social conversations across major platforms. 
-                  Powered by Gemini AI to detect emerging patterns worldwide.
+                  {activeTab === 'Dashboard' 
+                    ? 'Real-time analysis of social conversations across major platforms. Powered by Gemini AI to detect emerging patterns worldwide.'
+                    : `Viewing detailed ${activeTab.toLowerCase()} insights and metrics.`}
                 </p>
               </div>
 
@@ -68,7 +89,7 @@ export default function App() {
                 </button>
                 <div className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white/60 text-sm">
                   <Globe2 size={16} />
-                  <span>Global Coverage</span>
+                  <span>{platformFilter === 'All' ? 'Global Coverage' : `${platformFilter} Focus`}</span>
                 </div>
               </div>
             </div>
@@ -85,10 +106,21 @@ export default function App() {
           {/* Trends Grid */}
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-semibold">Emerging Topics</h3>
+              <h3 className="text-xl font-semibold">
+                {searchQuery ? `Search results for "${searchQuery}"` : 'Emerging Topics'}
+              </h3>
               <div className="flex gap-2">
                 {['All', 'X', 'TikTok', 'Reddit', 'YouTube'].map(p => (
-                  <button key={p} className="px-3 py-1 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-white/60 transition-colors">
+                  <button 
+                    key={p} 
+                    onClick={() => setPlatformFilter(p)}
+                    className={cn(
+                      "px-3 py-1 rounded-lg text-xs font-medium transition-colors",
+                      platformFilter === p 
+                        ? "bg-blue-600 text-white" 
+                        : "bg-white/5 hover:bg-white/10 text-white/60"
+                    )}
+                  >
                     {p}
                   </button>
                 ))}
@@ -101,9 +133,9 @@ export default function App() {
                   <div key={i} className="glass-card h-48 animate-pulse bg-white/5" />
                 ))}
               </div>
-            ) : trends.length > 0 ? (
+            ) : filteredTrends.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-                {trends.map((trend, i) => (
+                {filteredTrends.map((trend, i) => (
                   <TrendCard 
                     key={i} 
                     trend={trend} 
@@ -115,7 +147,13 @@ export default function App() {
             ) : (
               <div className="flex flex-col items-center justify-center py-20 glass-card">
                 <AlertCircle size={48} className="text-white/20 mb-4" />
-                <p className="text-white/40">No trends found. Try refreshing.</p>
+                <p className="text-white/40">No trends found matching your criteria.</p>
+                <button 
+                  onClick={() => {setSearchQuery(''); setPlatformFilter('All');}}
+                  className="mt-4 text-blue-400 text-sm hover:underline"
+                >
+                  Clear all filters
+                </button>
               </div>
             )}
           </div>
