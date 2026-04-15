@@ -1,0 +1,6 @@
+{
+  "name": "TrendPulse AI",
+  "description": "Global social media trend analyzer powered by Gemini AI. Research trending topics across X, TikTok, Reddit, and YouTube in real-time.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
