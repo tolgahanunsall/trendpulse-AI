@@ -37,8 +37,16 @@ export const TrendCard: React.FC<TrendCardProps> = ({ trend, index, onClick }) =
       onClick={onClick}
       className="glass-card p-5 group cursor-pointer hover:bg-white/10 transition-all duration-300 relative overflow-hidden"
     >
-      <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
-        <ExternalLink size={14} className="text-white/40" />
+      <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+        <a 
+          href={trend.sourceUrl} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="p-2 hover:bg-white/10 rounded-lg transition-colors block"
+        >
+          <ExternalLink size={14} className="text-white/40 hover:text-blue-400" />
+        </a>
       </div>
 
       <div className="flex justify-between items-start mb-4">

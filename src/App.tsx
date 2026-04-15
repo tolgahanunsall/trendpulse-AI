@@ -5,7 +5,7 @@ import { Header } from './components/Header';
 import { TrendCard } from './components/TrendCard';
 import { TrendChart } from './components/TrendChart';
 import { fetchGlobalTrends, analyzeTopic, Trend } from './services/gemini';
-import { RefreshCw, Globe2, AlertCircle, X, Sparkles } from 'lucide-react';
+import { RefreshCw, Globe2, AlertCircle, X, Sparkles, ExternalLink } from 'lucide-react';
 
 export default function App() {
   const [trends, setTrends] = useState<Trend[]>([]);
@@ -169,10 +169,21 @@ export default function App() {
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="font-semibold flex items-center gap-2">
-                    <Sparkles size={16} className="text-blue-400" />
-                    AI Deep Dive
-                  </h4>
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-semibold flex items-center gap-2">
+                      <Sparkles size={16} className="text-blue-400" />
+                      AI Deep Dive
+                    </h4>
+                    <a 
+                      href={selectedTrend.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-xs text-blue-400 hover:text-blue-300 transition-colors font-medium"
+                    >
+                      View Original Source
+                      <ExternalLink size={12} />
+                    </a>
+                  </div>
                   {analyzing ? (
                     <div className="space-y-3">
                       <div className="h-4 bg-white/5 rounded animate-pulse w-full" />

@@ -9,13 +9,14 @@ export interface Trend {
   platform: 'X' | 'TikTok' | 'Reddit' | 'YouTube';
   description: string;
   region: string;
+  sourceUrl: string;
 }
 
 export async function fetchGlobalTrends(): Promise<Trend[]> {
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: "Analyze current global social media trends across X, TikTok, Reddit, and YouTube. Provide a list of 8-10 trending topics with volume estimates, sentiment, and a brief description. Focus on diverse regions.",
+      contents: "Analyze current global social media trends across X, TikTok, Reddit, and YouTube. Provide a list of 8-10 trending topics with volume estimates, sentiment, a brief description, and a direct link to the search or topic on that platform. Focus on diverse regions.",
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -28,9 +29,10 @@ export async function fetchGlobalTrends(): Promise<Trend[]> {
               sentiment: { type: Type.STRING, enum: ['positive', 'neutral', 'negative'] },
               platform: { type: Type.STRING, enum: ['X', 'TikTok', 'Reddit', 'YouTube'] },
               description: { type: Type.STRING },
-              region: { type: Type.STRING }
+              region: { type: Type.STRING },
+              sourceUrl: { type: Type.STRING }
             },
-            required: ['topic', 'volume', 'sentiment', 'platform', 'description', 'region']
+            required: ['topic', 'volume', 'sentiment', 'platform', 'description', 'region', 'sourceUrl']
           }
         }
       }
